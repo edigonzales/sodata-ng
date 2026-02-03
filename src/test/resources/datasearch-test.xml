@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<themePublications>
+  <themePublication>
+    <identifier>ch.so.agi.alpha</identifier>
+    <model>MODEL_ALPHA</model>
+    <title>Alpha Dataset</title>
+    <shortDescription>Alpha short</shortDescription>
+    <lastPublishingDate>2024-01-01</lastPublishingDate>
+    <secondToLastPublishingDate>2023-12-01</secondToLastPublishingDate>
+    <owner>
+      <agencyName>Amt Alpha</agencyName>
+      <abbreviation>AA</abbreviation>
+      <officeAtWeb>https://alpha.example</officeAtWeb>
+      <email>mailto:alpha@example</email>
+      <phone>000 000 00 00</phone>
+    </owner>
+    <servicer>
+      <agencyName>Servicer Alpha</agencyName>
+      <abbreviation>SA</abbreviation>
+      <officeAtWeb>https://servicer.example</officeAtWeb>
+      <email>mailto:servicer@example</email>
+      <phone>111 111 11 11</phone>
+    </servicer>
+    <downloadHostUrl>https://files.example</downloadHostUrl>
+    <keywords>
+      <keyword>alpha</keyword>
+      <keyword>geo</keyword>
+    </keywords>
+    <fileFormats>
+      <fileFormat>
+        <name>GeoPackage</name>
+        <mimetype>application/geopackage+sqlite3</mimetype>
+        <abbreviation>gpkg.zip</abbreviation>
+      </fileFormat>
+    </fileFormats>
+    <tablesInfo>
+      <tableInfo>
+        <sqlName>alpha_table</sqlName>
+        <title>Alpha Table</title>
+        <shortDescription>Alpha table desc</shortDescription>
+      </tableInfo>
+    </tablesInfo>
+    <items>
+      <item>
+        <identifier>alpha-1</identifier>
+        <title>Alpha Item</title>
+        <lastPublishingDate>2024-01-01</lastPublishingDate>
+        <secondToLastPublishingDate>2023-12-01</secondToLastPublishingDate>
+        <bbox>
+          <left>2600000.0</left>
+          <bottom>1200000.0</bottom>
+          <right>2601000.0</right>
+          <top>1201000.0</top>
+        </bbox>
+        <geometry>POLYGON((2600000 1200000,2601000 1200000,2601000 1201000,2600000 1201000,2600000 1200000))</geometry>
+      </item>
+    </items>
+  </themePublication>
+  <themePublication>
+    <identifier>ch.so.agi.beta</identifier>
+    <model>MODEL_BETA</model>
+    <title>Beta Dataset</title>
+    <shortDescription>Beta short</shortDescription>
+    <lastPublishingDate>2024-02-01</lastPublishingDate>
+    <secondToLastPublishingDate>2024-01-01</secondToLastPublishingDate>
+    <owner>
+      <agencyName>Amt Beta</agencyName>
+      <abbreviation>AB</abbreviation>
+      <officeAtWeb>https://beta.example</officeAtWeb>
+      <email>mailto:beta@example</email>
+      <phone>222 222 22 22</phone>
+    </owner>
+    <servicer>
+      <agencyName>Servicer Beta</agencyName>
+      <abbreviation>SB</abbreviation>
+      <officeAtWeb>https://servicer-beta.example</officeAtWeb>
+      <email>mailto:servicer-beta@example</email>
+      <phone>333 333 33 33</phone>
+    </servicer>
+    <downloadHostUrl>https://files.example</downloadHostUrl>
+    <synonyms>
+      <synonym>beta-syn</synonym>
+    </synonyms>
+  </themePublication>
+</themePublications>
