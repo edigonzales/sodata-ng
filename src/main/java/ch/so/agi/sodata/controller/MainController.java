@@ -42,4 +42,12 @@ public class MainController {
         return mav;
     }
 
+    @GetMapping(value = "/", produces = "text/html")
+    public ModelAndView index() {
+        ModelAndView mav = new ModelAndView("index");
+        mav.addObject("name", "Pong");
+        return mav;
+    }
+
+    
 }
