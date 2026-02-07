@@ -166,12 +166,94 @@ body.so-page {
   background-color: #efefef;
   color: #333;
   font-size: 1rem;
+  font-family: var(--so-font-family);
   padding: 0 12px;
 }
 
 .download-select:focus {
   outline: 2px solid #333;
   outline-offset: 1px;
+}
+
+.download-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  max-width: 280px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background-color: rgb(224, 224, 224);
+  color: var(--so-fg);
+  font-size: 1rem;
+  font-family: var(--so-font-family);
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.download-badge-link,
+.download-badge-link:visited,
+.download-badge-link:hover,
+.download-badge-link:active,
+.download-badge-link:focus {
+  color: var(--so-fg);
+  text-decoration: none;
+}
+
+.download-badge-link:focus,
+.download-badge-copy:focus {
+  outline: 2px solid #333;
+  outline-offset: 1px;
+}
+
+.download-badge-copy {
+  position: relative;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.download-badge-copy::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  background: #1d1d1d;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-out, transform 120ms ease-out;
+  z-index: 10;
+}
+
+.download-badge-copy::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 3px);
+  transform: translateX(-50%) translateY(4px);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #1d1d1d;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-out, transform 120ms ease-out;
+  z-index: 10;
+}
+
+.download-badge-copy.is-copied::after,
+.download-badge-copy.is-copied::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .meta-section {
@@ -324,6 +406,10 @@ body.so-page {
   }
 
   .download-select {
+    max-width: 100%;
+  }
+
+  .download-badge {
     max-width: 100%;
   }
 

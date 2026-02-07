@@ -97,5 +97,6 @@
 
 <footer>
 </footer>
+<script src="/sodata-download.js" defer></script>
 </body>
 </html>

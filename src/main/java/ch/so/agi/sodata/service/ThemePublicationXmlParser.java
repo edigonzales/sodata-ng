@@ -92,13 +92,15 @@ public class ThemePublicationXmlParser {
         WgcPreviewLayer wgcPreviewLayer = parseWgcPreviewLayer(childElement(element, "wgcPreviewLayer"));
         List<Item> items = parseItems(childElement(element, "items"));
         List<Service> services = parseServices(childElement(element, "services"));
+        boolean hasMultipleItems = items != null && items.size() > 1;
+        Boolean normalizedHasSubunits = Boolean.TRUE.equals(hasSubunits) || hasMultipleItems;
 
         return new ThemePublication(
                 identifier,
                 model,
                 title,
                 shortDescription,
-                hasSubunits,
+                normalizedHasSubunits,
                 lastPublishingDate,
                 secondToLastPublishingDate,
                 owner,

@@ -31,7 +31,7 @@ class ThemePublicationViewControllerTest {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        Path xmlPath = Path.of("src/test/resources/datasearch-test.xml").toAbsolutePath();
+        Path xmlPath = Path.of("src/test/resources/datasearch-view-test.xml").toAbsolutePath();
         registry.add("app.config-file", xmlPath::toString);
         registry.add("app.items-geojson-dir", () -> tempDir.resolve("items").toString());
         registry.add("indexing.directory", () -> tempDir.resolve("lucene").toString());
@@ -68,6 +68,32 @@ class ThemePublicationViewControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("Beta Dataset")))
                 .andExpect(content().string(not(containsString("Alpha Dataset"))));
+    }
+
+    @Test
+    void rendersSingleFormatBadgesAndMultiFormatSelectFromXml() throws Exception {
+        mockMvc.perform(get("/themepublications/fragment"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("<option value=\"\">Format auswählen</option>")))
+                .andExpect(content().string(containsString("class=\"download-badge download-badge-link\"")))
+                .andExpect(content().string(containsString(
+                        "href=\"https://files.example/ch.so.agi.alpha/aktuell/ch.so.agi.alpha.gpkg.zip\"")))
+                .andExpect(content().string(containsString("download-badge-copy")))
+                .andExpect(content().string(containsString("Cloud Optimized GeoTIFF")))
+                .andExpect(content().string(containsString(
+                        "data-tooltip=\"Link wurde in Zwischenablage kopiert.\"")))
+                .andExpect(content().string(containsString(
+                        "data-copy-url=\"https://files.example/ch.so.agi.raster/aktuell/ch.so.agi.raster.tif\"")))
+                .andExpect(content().string(containsString("data-publication-id=\"ch.so.agi.subunit\"")))
+                .andExpect(content().string(containsString("data-download-mode=\"subunit\"")))
+                .andExpect(content().string(containsString(
+                        "value=\"/themepublication/data/ch.so.agi.subunit/xtf.zip\"")))
+                .andExpect(content().string(containsString("data-publication-id=\"ch.so.agi.multi\"")))
+                .andExpect(content().string(containsString("data-download-mode=\"download\"")))
+                .andExpect(content().string(containsString(
+                        "value=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.gpkg.zip\"")))
+                .andExpect(content().string(containsString(
+                        "value=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.shp.zip\"")));
     }
 
     @Test
