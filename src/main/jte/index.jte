@@ -9,12 +9,13 @@
 
     <title>Geodatenbezug • Kanton Solothurn</title>
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.6/dist/styles/reset.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.6/dist/styles/fonts.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.6/dist/styles/tokens.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.8/dist/styles/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.8/dist/styles/fonts.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/so-web-components@0.1.8/dist/styles/tokens.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="sodata.css">
     
-    <script type="module" src="https://cdn.jsdelivr.net/npm/so-web-components@0.1.6/dist/index.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/so-web-components@0.1.8/dist/index.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.8"></script>
     
   <style>
@@ -97,6 +98,113 @@
   cursor: pointer; /* Change cursor to pointer on hover */
   z-index: 1; /* Ensure icon is above input */
 }    
+
+.results {
+  margin-top: 48px;
+}
+
+.publications-grid-header {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(180px, 0.9fr) minmax(120px, 0.5fr) minmax(230px, 1fr);
+  border-bottom: 1px solid #DFDFDF;
+  padding: 12px 14px;
+  font-weight: 900;
+        font-size: 1.125rem;
+}
+
+.publications-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(180px, 0.9fr) minmax(120px, 0.5fr) minmax(230px, 1fr);
+  border-bottom: 1px solid #DFDFDF;
+  padding: 16px 14px;
+  align-items: center;
+        font-size: 1.125rem;
+  
+}
+
+/*
+.publications-grid-body .publications-row:nth-child(even) {
+  background-color: #f3f3f4;
+}
+*/
+
+.publications-cell {
+  padding-right: 12px;
+  min-width: 0;
+  
+}
+
+.publications-theme {
+  font-weight: 500;
+}
+
+
+
+.meta-link {
+  color: #3a3a3a;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.meta-link:hover {
+  color: #111;
+}
+
+.meta-link .bi {
+  font-size: 1.8rem;
+}
+
+.download-select {
+  width: 100%;
+  max-width: 280px;
+  height: 38px;
+  border: 1px solid #c9c9cb;
+  border-radius: 6px;
+  background-color: #efefef;
+  color: #333;
+  font-size: 1rem;
+  padding: 0 12px;
+}
+
+.download-select:focus {
+  outline: 2px solid #333;
+  outline-offset: 1px;
+}
+
+.results-empty {
+  color: #555;
+  padding: 16px 14px;
+}
+
+@media (max-width: 900px) {
+  .publications-grid-header {
+    display: none;
+  }
+
+  .publications-row {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+  }
+
+  .publications-cell {
+    display: grid;
+    grid-template-columns: minmax(120px, 34%) 1fr;
+    column-gap: 10px;
+    align-items: center;
+    padding-right: 0;
+  }
+
+  .publications-cell::before {
+    content: attr(data-label);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
+  .download-select {
+    max-width: 100%;
+  }
+}
     
   </style>
 
@@ -142,10 +250,10 @@
             <input id="search-input" class="search-input"
                 type="text" 
                 name="query" 
-                hx-get="models" 
+                hx-get="/themepublications/fragment" 
                 hx-target="#results" 
-                hx-trigger="input keyup changed delay:300ms"
-                hx-headers='{"Accept": "text/html"}' 
+                hx-trigger="input changed delay:300ms"
+                hx-swap="innerHTML"
                 autocomplete="off" 
                 placeholder="Suchbegriff" autofocus/>
 
@@ -170,6 +278,13 @@
 
 
         </div>     
+
+        <div id="results"
+             class="results"
+             hx-get="/themepublications/fragment"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+        </div>
         
     </main>
     
