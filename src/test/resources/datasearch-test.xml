@@ -38,6 +38,22 @@
         <sqlName>alpha_table</sqlName>
         <title>Alpha Table</title>
         <shortDescription>Alpha table desc</shortDescription>
+        <attributesInfo>
+          <attributeInfo>
+            <name>alpha_id</name>
+            <alias>Alpha ID</alias>
+            <shortDescription>Eindeutiger Schlüssel</shortDescription>
+            <datatype>Integer</datatype>
+            <mandatory>true</mandatory>
+          </attributeInfo>
+          <attributeInfo>
+            <name>alpha_name</name>
+            <alias>Name</alias>
+            <shortDescription>Bezeichnung des Datensatzes</shortDescription>
+            <datatype>Text</datatype>
+            <mandatory>false</mandatory>
+          </attributeInfo>
+        </attributesInfo>
       </tableInfo>
     </tablesInfo>
     <items>

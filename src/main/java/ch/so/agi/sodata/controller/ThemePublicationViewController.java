@@ -1,11 +1,14 @@
 package ch.so.agi.sodata.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.so.agi.sodata.domain.ThemePublication;
 import ch.so.agi.sodata.service.InvalidLuceneQueryException;
 import ch.so.agi.sodata.service.LuceneSearcherException;
 import ch.so.agi.sodata.service.ThemePublicationIndexService;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -39,6 +42,19 @@ public class ThemePublicationViewController {
 
         ModelAndView modelAndView = new ModelAndView("themepublications-fragment");
         modelAndView.addObject("publications", publications);
+        return modelAndView;
+    }
+
+    @GetMapping(value = "/meta/{identifier}", produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView findThemePublicationMetadata(@PathVariable("identifier") String identifier)
+            throws LuceneSearcherException {
+        Optional<ThemePublication> publication = indexService.findByIdentifier(identifier);
+        if (publication.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Theme publication not found.");
+        }
+
+        ModelAndView modelAndView = new ModelAndView("themepublication-meta");
+        modelAndView.addObject("publication", publication.get());
         return modelAndView;
     }
 

@@ -57,7 +57,8 @@ class ThemePublicationViewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("Alpha Dataset")))
-                .andExpect(content().string(containsString("Beta Dataset")));
+                .andExpect(content().string(containsString("Beta Dataset")))
+                .andExpect(content().string(containsString("/themepublications/meta/ch.so.agi.alpha")));
     }
 
     @Test
@@ -74,5 +75,22 @@ class ThemePublicationViewControllerTest {
         mockMvc.perform(get("/themepublications/fragment").param("query", "***"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Search term did not contain valid tokens.")));
+    }
+
+    @Test
+    void returnsMetadataPageForExistingIdentifier() throws Exception {
+        mockMvc.perform(get("/themepublications/meta/ch.so.agi.alpha"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(containsString("Datenbeschreibung")))
+                .andExpect(content().string(containsString("Alpha Dataset")))
+                .andExpect(content().string(containsString("alpha_id")))
+                .andExpect(content().string(containsString("Pflichtattribut")));
+    }
+
+    @Test
+    void returnsNotFoundForUnknownMetadataIdentifier() throws Exception {
+        mockMvc.perform(get("/themepublications/meta/ch.so.agi.unknown"))
+                .andExpect(status().isNotFound());
     }
 }

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 public class ThemePublicationIndexService implements Closeable {
@@ -95,6 +96,17 @@ public class ThemePublicationIndexService implements Closeable {
             return findAllSortedByTitle();
         }
         return searchInternal(buildQuery(searchTerms), searchTerms);
+    }
+
+    public Optional<ThemePublication> findByIdentifier(String identifier) throws LuceneSearcherException {
+        if (identifier == null || identifier.isBlank()) {
+            return Optional.empty();
+        }
+        List<ThemePublication> results = searchInternal(new TermQuery(new Term("id", lower(identifier))), identifier);
+        if (results.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(results.getFirst());
     }
 
     private List<ThemePublication> searchInternal(Query query, String searchTerms) throws LuceneSearcherException {

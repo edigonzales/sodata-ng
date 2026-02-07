@@ -25,5 +25,10 @@ class ThemePublicationXmlParserTest {
         assertThat(alpha.title()).isEqualTo("Alpha Dataset");
         assertThat(alpha.owner().agencyName()).isEqualTo("Amt Alpha");
         assertThat(alpha.items()).hasSize(1);
+        assertThat(alpha.tablesInfo()).hasSize(1);
+        assertThat(alpha.tablesInfo().getFirst().attributesInfo()).hasSize(2);
+        assertThat(alpha.tablesInfo().getFirst().attributesInfo().getFirst().name()).isEqualTo("alpha_id");
+        assertThat(alpha.tablesInfo().getFirst().attributesInfo().getFirst().datatype()).isEqualTo("Integer");
+        assertThat(alpha.tablesInfo().getFirst().attributesInfo().getFirst().mandatory()).isTrue();
     }
 }

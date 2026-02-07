@@ -1,13 +1,13 @@
 package ch.so.agi.sodata.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record TableInfo(
-        String sqlName,
-        String title,
+public record AttributeInfo(
+        String name,
+        String alias,
         String shortDescription,
-        List<AttributeInfo> attributesInfo
+        String datatype,
+        Boolean mandatory
 ) {
 }

@@ -2,6 +2,7 @@ package ch.so.agi.sodata.service;
 
 import ch.so.agi.sodata.config.AppProperties;
 import ch.so.agi.sodata.domain.Bbox;
+import ch.so.agi.sodata.domain.AttributeInfo;
 import ch.so.agi.sodata.domain.FileFormat;
 import ch.so.agi.sodata.domain.Item;
 import ch.so.agi.sodata.domain.Layer;
@@ -174,10 +175,28 @@ public class ThemePublicationXmlParser {
             tables.add(new TableInfo(
                     text(element, "sqlName"),
                     text(element, "title"),
-                    text(element, "shortDescription")
+                    text(element, "shortDescription"),
+                    parseAttributesInfo(childElement(element, "attributesInfo"))
             ));
         }
         return tables.isEmpty() ? null : tables;
+    }
+
+    private List<AttributeInfo> parseAttributesInfo(Element wrapper) {
+        if (wrapper == null) {
+            return null;
+        }
+        List<AttributeInfo> attributes = new ArrayList<>();
+        for (Element element : childElements(wrapper, "attributeInfo")) {
+            attributes.add(new AttributeInfo(
+                    text(element, "name"),
+                    text(element, "alias"),
+                    text(element, "shortDescription"),
+                    text(element, "datatype"),
+                    parseBoolean(text(element, "mandatory"))
+            ));
+        }
+        return attributes.isEmpty() ? null : attributes;
     }
 
     private List<Item> parseItems(Element wrapper) {

@@ -35,10 +35,10 @@ public class MainController {
         return new ResponseEntity<String>("sodata", HttpStatus.OK);
     }
     
-    @GetMapping(value = "/pong", produces = "text/html")
+    @GetMapping(value = {"/pong", "/ui/pong"}, produces = "text/html")
     public ModelAndView pong() {
         ModelAndView mav = new ModelAndView("pong");
-        mav.addObject("name", "Pong");
+        mav.addObject("name", "Stefan");
         return mav;
     }
 

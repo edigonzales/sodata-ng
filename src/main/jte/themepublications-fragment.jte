@@ -21,7 +21,7 @@
             @endif
         </div>
         <div class="publications-cell" data-label="Metadaten">
-            <a class="meta-link" href="#" aria-label="Metadaten">
+            <a class="meta-link" href="/themepublications/meta/${publication.identifier()}" target="_blank" rel="noopener noreferrer" aria-label="Metadaten">
                 <i class="bi bi-info-circle"></i>
             </a>
         </div>
