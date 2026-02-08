@@ -44,7 +44,7 @@ body.so-page {
 
 .lead-text {
   margin-top: 24px;
-  max-width: 1040px;
+  /*max-width: 1040px;*/
 }
 
 .lead-text p {
@@ -108,6 +108,7 @@ body.so-page {
 
 .results {
   margin-top: 44px;
+  font-size: 1.125rem;
 }
 
 .results-empty {
@@ -120,7 +121,6 @@ body.so-page {
   grid-template-columns: minmax(0, 2.5fr) minmax(180px, 0.9fr) minmax(130px, 0.6fr) minmax(240px, 1fr);
   border-bottom: 1px solid #dddddf;
   padding: 12px 14px;
-  font-size: 1.08rem;
   font-weight: 900;
 }
 
@@ -130,7 +130,6 @@ body.so-page {
   border-bottom: 1px solid #dddddf;
   padding: 16px 14px;
   align-items: center;
-  font-size: 1.08rem;
 }
 
 .publications-cell {
@@ -402,7 +401,7 @@ body.so-page {
   .publications-cell::before {
     content: attr(data-label);
     font-weight: 900;
-    letter-spacing: 0.04em;
+    letter-spacing: 0em;
   }
 
   .download-select {

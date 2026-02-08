@@ -9,6 +9,7 @@
 - Cloud Formate öffnet link zu Serverlisting
 - Ggf muss man Spaltenbreiten anders aufteilen.
 - Statt cloud optimized geotiff nur GeoTIFF. Im Text wird es ja erzählt.
+- Somit verlieren wir wieder mehr Javascript.
 
 - Siehe https://gemini.google.com/app/51b88380beccaf5c für minimal JS für Tooltip
 
