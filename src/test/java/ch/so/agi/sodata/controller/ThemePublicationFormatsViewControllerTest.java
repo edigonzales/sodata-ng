@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class ThemePublicationDataViewControllerTest {
+class ThemePublicationFormatsViewControllerTest {
     private static final Path tempDir = createTempDir();
 
     @Autowired
@@ -39,7 +39,7 @@ class ThemePublicationDataViewControllerTest {
 
     private static Path createTempDir() {
         try {
-            return Files.createTempDirectory("sodata-data-view-tests");
+            return Files.createTempDirectory("sodata-formats-view-tests");
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create temp dir for tests", e);
         }
@@ -51,21 +51,19 @@ class ThemePublicationDataViewControllerTest {
     }
 
     @Test
-    void returnsDataPageWithMapForExistingIdentifier() throws Exception {
-        mockMvc.perform(get("/themepublication/data/ch.so.agi.subunit/xtf.zip"))
+    void returnsDummyFormatsPageForExistingIdentifier() throws Exception {
+        mockMvc.perform(get("/themepublication/formats/ch.so.agi.alpha"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(content().string(containsString("Datenauswahl (Platzhalter)")))
-                .andExpect(content().string(containsString("Webkarte")))
-                .andExpect(content().string(containsString("<mapml-viewer")))
-                .andExpect(content().string(containsString("map-layer label=\"Hintergrundkarte\"")))
-                .andExpect(content().string(containsString("ch.so.agi.subunit")))
-                .andExpect(content().string(containsString("xtf.zip")));
+                .andExpect(content().string(containsString("Mehr Formate (Platzhalter)")))
+                .andExpect(content().string(containsString("FlatGeobuf")))
+                .andExpect(content().string(containsString("GeoParquet")))
+                .andExpect(content().string(containsString("ch.so.agi.alpha")));
     }
 
     @Test
     void returnsNotFoundForUnknownIdentifier() throws Exception {
-        mockMvc.perform(get("/themepublication/data/ch.so.agi.unknown/gpkg.zip"))
+        mockMvc.perform(get("/themepublication/formats/ch.so.agi.unknown"))
                 .andExpect(status().isNotFound());
     }
 }

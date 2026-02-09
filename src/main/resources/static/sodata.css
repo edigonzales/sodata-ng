@@ -117,7 +117,7 @@ body.so-page {
 
 .publications-grid-header {
   display: grid;
-  grid-template-columns: minmax(0, 2.5fr) minmax(180px, 0.9fr) minmax(130px, 0.6fr) minmax(240px, 1fr);
+  grid-template-columns: minmax(0, 2.1fr) minmax(150px, 0.75fr) minmax(100px, 0.45fr) minmax(340px, 1.45fr);
   border-bottom: 1px solid #dddddf;
   padding: 12px 14px;
   font-weight: 900;
@@ -125,7 +125,8 @@ body.so-page {
 
 .publications-row {
   display: grid;
-  grid-template-columns: minmax(0, 2.5fr) minmax(180px, 0.9fr) minmax(130px, 0.6fr) minmax(240px, 1fr);
+  /* grid-template-columns: minmax(0, 2.5fr) minmax(180px, 0.9fr) minmax(130px, 0.6fr) minmax(240px, 1fr); */
+  grid-template-columns: minmax(0, 2.1fr) minmax(150px, 0.75fr) minmax(100px, 0.45fr) minmax(340px, 1.45fr);
   border-bottom: 1px solid #dddddf;
   padding: 16px 14px;
   align-items: center;
@@ -283,6 +284,17 @@ body.so-page {
   line-height: 1.55;
 }
 
+.webmap-section .meta-value {
+  margin-bottom: 14px;
+}
+
+.webmap-viewer {
+  display: block;
+  width: 100%;
+  height: 600px;
+  border: 1px solid #dddddf;
+}
+
 .meta-contact {
   font-size: 1.1rem;
   line-height: 1.45;
@@ -403,5 +415,9 @@ body.so-page {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+  }
+
+  .webmap-viewer {
+    height: 420px;
   }
 }

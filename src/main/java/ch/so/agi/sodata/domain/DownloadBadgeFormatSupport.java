@@ -73,6 +73,15 @@ public final class DownloadBadgeFormatSupport {
         return badgeLabel(fileFormat);
     }
 
+    public static boolean containsAbbreviation(List<FileFormat> fileFormats, String abbreviation) {
+        if (fileFormats == null || fileFormats.isEmpty() || abbreviation == null || abbreviation.isBlank()) {
+            return false;
+        }
+        String normalized = abbreviation.trim().toLowerCase(Locale.ROOT);
+        return fileFormats.stream()
+                .anyMatch(fileFormat -> normalized.equals(normalizedAbbreviation(fileFormat)));
+    }
+
     private static boolean isRasterWithoutSubunits(ThemePublication publication) {
         if (publication == null) {
             return false;

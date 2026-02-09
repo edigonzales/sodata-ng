@@ -60,6 +60,14 @@
                         @endif
                     @endif
                 @endfor
+                @if(ch.so.agi.sodata.domain.DownloadBadgeFormatSupport.containsAbbreviation(publication.fileFormats(), "gpkg.zip"))
+                <a class="download-badge download-badge-link"
+                   href="/themepublication/formats/${publication.identifier()}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    mehr Formate
+                </a>
+                @endif
             </div>
             @endif
         </div>

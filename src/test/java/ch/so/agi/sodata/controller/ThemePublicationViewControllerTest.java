@@ -87,6 +87,11 @@ class ThemePublicationViewControllerTest {
                         "data-copy-url=\"https://files.example/ch.so.agi.raster/aktuell/ch.so.agi.raster.tif\"")))
                 .andExpect(content().string(containsString(
                         "href=\"/themepublication/data/ch.so.agi.subunit/xtf.zip\"")))
+                .andExpect(content().string(containsString("mehr Formate")))
+                .andExpect(content().string(containsString(
+                        "href=\"/themepublication/formats/ch.so.agi.alpha\"")))
+                .andExpect(content().string(containsString(
+                        "href=\"/themepublication/formats/ch.so.agi.multi\"")))
                 .andExpect(content().string(not(containsString("<select"))))
                 .andReturn();
 
