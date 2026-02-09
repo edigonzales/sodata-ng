@@ -11,9 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,10 +73,9 @@ class ThemePublicationViewControllerTest {
     }
 
     @Test
-    void rendersSingleFormatBadgesAndMultiFormatSelectFromXml() throws Exception {
-        mockMvc.perform(get("/themepublications/fragment"))
+    void rendersFormatBadgesAndExpectedOrderFromXml() throws Exception {
+        MvcResult result = mockMvc.perform(get("/themepublications/fragment"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("<option value=\"\">Format auswählen</option>")))
                 .andExpect(content().string(containsString("class=\"download-badge download-badge-link\"")))
                 .andExpect(content().string(containsString(
                         "href=\"https://files.example/ch.so.agi.alpha/aktuell/ch.so.agi.alpha.gpkg.zip\"")))
@@ -84,16 +85,27 @@ class ThemePublicationViewControllerTest {
                         "data-tooltip=\"Link wurde in Zwischenablage kopiert.\"")))
                 .andExpect(content().string(containsString(
                         "data-copy-url=\"https://files.example/ch.so.agi.raster/aktuell/ch.so.agi.raster.tif\"")))
-                .andExpect(content().string(containsString("data-publication-id=\"ch.so.agi.subunit\"")))
-                .andExpect(content().string(containsString("data-download-mode=\"subunit\"")))
                 .andExpect(content().string(containsString(
-                        "value=\"/themepublication/data/ch.so.agi.subunit/xtf.zip\"")))
-                .andExpect(content().string(containsString("data-publication-id=\"ch.so.agi.multi\"")))
-                .andExpect(content().string(containsString("data-download-mode=\"download\"")))
-                .andExpect(content().string(containsString(
-                        "value=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.gpkg.zip\"")))
-                .andExpect(content().string(containsString(
-                        "value=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.shp.zip\"")));
+                        "href=\"/themepublication/data/ch.so.agi.subunit/xtf.zip\"")))
+                .andExpect(content().string(not(containsString("<select"))))
+                .andReturn();
+
+        String html = result.getResponse().getContentAsString();
+        int xtf = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.xtf.zip\"");
+        int itf = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.itf.zip\"");
+        int gpkg = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.gpkg.zip\"");
+        int shp = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.shp.zip\"");
+        int dxf = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.dxf.zip\"");
+        int laz = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.laz\"");
+        int tif = html.indexOf("href=\"https://files.example/ch.so.agi.multi/aktuell/ch.so.agi.multi.tif\"");
+
+        assertThat(xtf).isGreaterThanOrEqualTo(0);
+        assertThat(itf).isGreaterThan(xtf);
+        assertThat(gpkg).isGreaterThan(itf);
+        assertThat(shp).isGreaterThan(gpkg);
+        assertThat(dxf).isGreaterThan(shp);
+        assertThat(laz).isGreaterThan(dxf);
+        assertThat(tif).isGreaterThan(laz);
     }
 
     @Test

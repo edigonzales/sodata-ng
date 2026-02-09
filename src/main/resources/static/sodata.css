@@ -18,7 +18,6 @@ body.so-page {
   display: block;
   max-width: none;
   margin: 0;
-  padding: 10px 24px 0;
 }
 
 .so-main {
@@ -156,54 +155,46 @@ body.so-page {
   font-size: 1.75rem;
 }
 
-.download-select {
-  width: 100%;
-  max-width: 280px;
-  height: 38px;
-  border: 1px solid #c9c9cb;
-  border-radius: 6px;
-  background-color: #efefef;
-  color: #333;
-  font-size: 1rem;
-  font-family: var(--so-font-family);
-  padding: 0 12px;
-}
-
-.download-select:focus {
-  outline: 2px solid #333;
-  outline-offset: 1px;
+.download-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
 }
 
 .download-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
-  max-width: 280px;
-  padding: 0 12px;
+  min-height: 25px;
+  min-width: 42px;
+  max-width: 220px;
+  padding: 0 10px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 4px;
   background-color: rgb(224, 224, 224);
   color: var(--so-fg);
-  font-size: 1rem;
+  font-size: 0.82rem;
   font-family: var(--so-font-family);
-  line-height: 1.2;
+  font-weight: 400;
+  line-height: 1.1;
   text-align: center;
   text-decoration: none;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
-.download-badge-link,
-.download-badge-link:visited,
-.download-badge-link:hover,
-.download-badge-link:active,
-.download-badge-link:focus {
+.so-page .download-badge-link,
+.so-page .download-badge-link:visited,
+.so-page .download-badge-link:hover,
+.so-page .download-badge-link:active,
+.so-page .download-badge-link:focus {
   color: var(--so-fg);
   text-decoration: none;
 }
 
 .download-badge-link:focus,
-.download-badge-copy:focus {
+.download-badge-copy:focus,
+.download-badge-copy:focus-visible {
   outline: 2px solid #333;
   outline-offset: 1px;
 }
@@ -402,10 +393,6 @@ body.so-page {
     content: attr(data-label);
     font-weight: 900;
     letter-spacing: 0em;
-  }
-
-  .download-select {
-    max-width: 100%;
   }
 
   .download-badge {

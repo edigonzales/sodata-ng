@@ -156,14 +156,39 @@
     <downloadHostUrl>https://files.example</downloadHostUrl>
     <fileFormats>
       <fileFormat>
-        <name>GeoPackage</name>
-        <mimetype>application/geopackage+sqlite3</mimetype>
-        <abbreviation>gpkg.zip</abbreviation>
+        <name>DXF</name>
+        <mimetype>application/dxf</mimetype>
+        <abbreviation>dxf.zip</abbreviation>
       </fileFormat>
       <fileFormat>
         <name>Shapefile</name>
         <mimetype>application/vnd.esri_shapefile</mimetype>
         <abbreviation>shp.zip</abbreviation>
+      </fileFormat>
+      <fileFormat>
+        <name>INTERLIS 2</name>
+        <mimetype>application/vnd.ili2+xml</mimetype>
+        <abbreviation>xtf.zip</abbreviation>
+      </fileFormat>
+      <fileFormat>
+        <name>GeoPackage</name>
+        <mimetype>application/geopackage+sqlite3</mimetype>
+        <abbreviation>gpkg.zip</abbreviation>
+      </fileFormat>
+      <fileFormat>
+        <name>INTERLIS 1</name>
+        <mimetype>application/vnd.ili1+xml</mimetype>
+        <abbreviation>itf.zip</abbreviation>
+      </fileFormat>
+      <fileFormat>
+        <name>LAZ</name>
+        <mimetype>application/vnd.laszip</mimetype>
+        <abbreviation>laz</abbreviation>
+      </fileFormat>
+      <fileFormat>
+        <name>GeoTIFF</name>
+        <mimetype>image/tiff; application=geotiff</mimetype>
+        <abbreviation>tif</abbreviation>
       </fileFormat>
     </fileFormats>
     <items>

@@ -29,80 +29,38 @@
             @if(publication.fileFormats() == null || publication.fileFormats().isEmpty())
             -
             @else
-                @if(Boolean.TRUE.equals(publication.hasSubunits()))
-                    <select class="download-select"
-                            data-publication-id="${publication.identifier()}"
-                            data-download-mode="subunit"
-                            aria-label="Daten herunterladen">
-                        <option value="">Format auswählen</option>
-                        @for(ch.so.agi.sodata.domain.FileFormat fileFormat : publication.fileFormats())
-                        <option value="/themepublication/data/${publication.identifier()}/${fileFormat.abbreviation()}">
-                            @if(fileFormat.name() != null && !fileFormat.name().isBlank())
-                            ${fileFormat.name()}
-                            @else
-                            ${fileFormat.abbreviation()}
-                            @endif
-                        </option>
-                        @endfor
-                    </select>
-                @else
-                    @if(publication.model() == null || publication.model().isBlank())
-                        @if(publication.fileFormats().size() == 1)
-                        <button type="button"
-                                class="download-badge download-badge-copy"
-                                data-copy-url="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${publication.fileFormats().get(0).abbreviation()}"
-                                data-tooltip="Link wurde in Zwischenablage kopiert."
-                                aria-label="Cloud Optimized GeoTIFF (Link in Zwischenablage kopieren)">
-                            Cloud Optimized GeoTIFF
-                        </button>
-                        @else
-                        <select class="download-select"
-                                data-publication-id="${publication.identifier()}"
-                                data-download-mode="clipboard"
-                                aria-label="Daten herunterladen">
-                            <option value="">Format auswählen</option>
-                            @for(ch.so.agi.sodata.domain.FileFormat fileFormat : publication.fileFormats())
-                            <option value="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${fileFormat.abbreviation()}">
-                                @if(fileFormat.name() != null && !fileFormat.name().isBlank())
-                                ${fileFormat.name()}
-                                @else
-                                ${fileFormat.abbreviation()}
-                                @endif
-                            </option>
-                            @endfor
-                        </select>
-                        @endif
+            <div class="download-badges">
+                @for(ch.so.agi.sodata.domain.FileFormat fileFormat : ch.so.agi.sodata.domain.DownloadBadgeFormatSupport.orderedFormats(publication.fileFormats()))
+                    @if(Boolean.TRUE.equals(publication.hasSubunits()))
+                    <a class="download-badge download-badge-link"
+                       href="/themepublication/data/${publication.identifier()}/${fileFormat.abbreviation()}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        ${ch.so.agi.sodata.domain.DownloadBadgeFormatSupport.badgeLabel(publication, fileFormat)}
+                    </a>
                     @else
-                        @if(publication.fileFormats().size() == 1)
+                        @if(publication.model() == null || publication.model().isBlank())
+                        <span class="download-badge download-badge-copy"
+                              role="button"
+                              tabindex="0"
+                              data-copy-url="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${fileFormat.abbreviation()}"
+                              data-tooltip="Link wurde in Zwischenablage kopiert."
+                              hx-on:click="if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(this.dataset.copyUrl); } this.classList.remove('is-copied'); void this.offsetWidth; this.classList.add('is-copied');"
+                              hx-on:keydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
+                              aria-label="Dateilink in Zwischenablage kopieren">
+                            ${ch.so.agi.sodata.domain.DownloadBadgeFormatSupport.badgeLabel(publication, fileFormat)}
+                        </span>
+                        @else
                         <a class="download-badge download-badge-link"
-                           href="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${publication.fileFormats().get(0).abbreviation()}"
+                           href="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${fileFormat.abbreviation()}"
                            target="_blank"
                            rel="noopener noreferrer">
-                            @if(publication.fileFormats().get(0).name() != null && !publication.fileFormats().get(0).name().isBlank())
-                            ${publication.fileFormats().get(0).name()}
-                            @else
-                            ${publication.fileFormats().get(0).abbreviation()}
-                            @endif
+                            ${ch.so.agi.sodata.domain.DownloadBadgeFormatSupport.badgeLabel(publication, fileFormat)}
                         </a>
-                        @else
-                        <select class="download-select"
-                                data-publication-id="${publication.identifier()}"
-                                data-download-mode="download"
-                                aria-label="Daten herunterladen">
-                            <option value="">Format auswählen</option>
-                            @for(ch.so.agi.sodata.domain.FileFormat fileFormat : publication.fileFormats())
-                            <option value="${publication.downloadHostUrl()}/${publication.identifier()}/aktuell/${publication.identifier()}.${fileFormat.abbreviation()}">
-                                @if(fileFormat.name() != null && !fileFormat.name().isBlank())
-                                ${fileFormat.name()}
-                                @else
-                                ${fileFormat.abbreviation()}
-                                @endif
-                            </option>
-                            @endfor
-                        </select>
                         @endif
                     @endif
-                @endif
+                @endfor
+            </div>
             @endif
         </div>
     </div>
