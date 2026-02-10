@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class ItemsGeoJsonWriterTest {
 
@@ -35,5 +36,17 @@ class ItemsGeoJsonWriterTest {
         assertThat(root.get("type").asText()).isEqualTo("FeatureCollection");
         assertThat(root.get("features")).isNotNull();
         assertThat(root.get("features").size()).isEqualTo(1);
+
+        JsonNode firstCoordinate = root.path("features").get(0)
+                .path("geometry")
+                .path("coordinates")
+                .get(0)
+                .get(0);
+        double x = firstCoordinate.get(0).asDouble();
+        double y = firstCoordinate.get(1).asDouble();
+
+        assertThat(x).isCloseTo(828064.77, within(0.5));
+        assertThat(y).isCloseTo(5934093.19, within(0.5));
+        assertThat(y).isBetween(5_930_000.0, 5_940_000.0);
     }
 }

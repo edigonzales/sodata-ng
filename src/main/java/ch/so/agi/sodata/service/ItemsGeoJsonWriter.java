@@ -37,9 +37,11 @@ public class ItemsGeoJsonWriter {
 
     private static final String EPSG_2056_PROJ4 =
             "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 "
-                    + "+k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +units=m +no_defs";
+                    + "+k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel "
+                    + "+towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs";
     private static final String EPSG_3857_PROJ4 =
-            "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs";
+            "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 "
+                    + "+k=1 +units=m +nadgrids=@null +wktext +no_defs";
 
     private final AppProperties appProperties;
     private final ObjectMapper objectMapper;
