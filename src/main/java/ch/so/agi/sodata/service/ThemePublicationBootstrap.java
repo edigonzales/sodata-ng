@@ -14,16 +14,16 @@ public class ThemePublicationBootstrap implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(ThemePublicationBootstrap.class);
 
     private final ThemePublicationXmlParser xmlParser;
-    private final ItemsGeoJsonWriter itemsGeoJsonWriter;
+    private final ItemsMapMlWriter itemsMapMlWriter;
     private final ThemePublicationIndexService indexService;
 
     public ThemePublicationBootstrap(
             ThemePublicationXmlParser xmlParser,
-            ItemsGeoJsonWriter itemsGeoJsonWriter,
+            ItemsMapMlWriter itemsMapMlWriter,
             ThemePublicationIndexService indexService
     ) {
         this.xmlParser = xmlParser;
-        this.itemsGeoJsonWriter = itemsGeoJsonWriter;
+        this.itemsMapMlWriter = itemsMapMlWriter;
         this.indexService = indexService;
     }
 
@@ -31,7 +31,7 @@ public class ThemePublicationBootstrap implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         List<ThemePublication> publications = xmlParser.loadThemePublications();
         log.info("Loaded {} theme publications from XML.", publications.size());
-        itemsGeoJsonWriter.writeGeoJsonFiles(publications);
+        itemsMapMlWriter.writeMapMlFiles(publications);
         indexService.rebuildIndex(publications);
     }
 }

@@ -3,6 +3,7 @@ package ch.so.agi.sodata.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,10 +13,7 @@ import ch.so.agi.sodata.config.AppProperties;
 import ch.so.agi.sodata.domain.FileFormat;
 import ch.so.agi.sodata.domain.ThemePublication;
 import ch.so.agi.sodata.service.LuceneSearcherException;
-import ch.so.agi.sodata.service.SubunitMapMlService;
 import ch.so.agi.sodata.service.ThemePublicationIndexService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,19 +34,13 @@ public class ThemePublicationDataViewController {
 
     private final ThemePublicationIndexService indexService;
     private final AppProperties appProperties;
-    private final ObjectMapper objectMapper;
-    private final SubunitMapMlService subunitMapMlService;
 
     public ThemePublicationDataViewController(
             ThemePublicationIndexService indexService,
-            AppProperties appProperties,
-            ObjectMapper objectMapper,
-            SubunitMapMlService subunitMapMlService
+            AppProperties appProperties
     ) {
         this.indexService = indexService;
         this.appProperties = appProperties;
-        this.objectMapper = objectMapper;
-        this.subunitMapMlService = subunitMapMlService;
     }
 
     @GetMapping(value = "/{identifier}/{format:.+}", produces = MediaType.TEXT_HTML_VALUE)
@@ -80,19 +72,18 @@ public class ThemePublicationDataViewController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Format not supported for theme publication.");
         }
 
-        Path subunitPath = resolveSubunitPath(identifier);
+        Path subunitPath = resolveSubunitMapMlPath(identifier, format);
         if (subunitPath == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subunit geometry file not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subunit mapml file not found.");
         }
 
-        JsonNode featureCollection;
+        String mapml;
         try {
-            featureCollection = objectMapper.readTree(subunitPath.toFile());
+            mapml = Files.readString(subunitPath, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not read subunit geometry file.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not read subunit mapml file.", e);
         }
 
-        String mapml = subunitMapMlService.toMapMl(publication, format, featureCollection);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("text/mapml;charset=UTF-8"))
                 .body(mapml);
@@ -118,25 +109,28 @@ public class ThemePublicationDataViewController {
                 .anyMatch(normalizedFormat::equals);
     }
 
-    private Path resolveSubunitPath(String identifier) {
-        if (identifier == null || identifier.isBlank() || !SAFE_NAME.matcher(identifier).matches()) {
+    private Path resolveSubunitMapMlPath(String identifier, String format) {
+        if (identifier == null || identifier.isBlank() || !SAFE_NAME.matcher(identifier).matches()
+                || format == null || format.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid identifier.");
         }
 
         Path dir = Path.of(appProperties.itemsGeojsonDir()).normalize();
-        Path geojson = dir.resolve(identifier + ".geojson").normalize();
-        Path json = dir.resolve(identifier + ".json").normalize();
+        String normalizedFormat = format.trim().toLowerCase(Locale.ROOT);
+        String fileName = sanitizeFilePart(identifier) + "." + sanitizeFilePart(normalizedFormat) + ".mapml";
+        Path mapml = dir.resolve(fileName).normalize();
 
-        if (!geojson.startsWith(dir) || !json.startsWith(dir)) {
+        if (!mapml.startsWith(dir)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid identifier.");
         }
 
-        if (Files.exists(geojson) && Files.isRegularFile(geojson)) {
-            return geojson;
-        }
-        if (Files.exists(json) && Files.isRegularFile(json)) {
-            return json;
+        if (Files.exists(mapml) && Files.isRegularFile(mapml)) {
+            return mapml;
         }
         return null;
+    }
+
+    private String sanitizeFilePart(String value) {
+        return value.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 }

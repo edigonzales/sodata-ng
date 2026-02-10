@@ -1,18 +1,27 @@
 package ch.so.agi.sodata.service;
 
 import ch.so.agi.sodata.domain.ThemePublication;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 
 @Service
 public class SubunitMapMlService {
     private static final String GEOMETRY_CLASS = "subunit-geometry";
 
-    public String toMapMl(ThemePublication publication, String format, JsonNode featureCollection) {
+    public String toMapMl(ThemePublication publication, String format, List<SubunitFeature> features) {
         String layerLabel = firstNonBlank(publication.title(), publication.identifier(), "Subunits") + " (Subunits)";
 
         StringBuilder mapml = new StringBuilder();
@@ -26,50 +35,40 @@ public class SubunitMapMlService {
         mapml.append("    <map-meta name=\"cs\" content=\"pcrs\" />\n");
         mapml.append("    <map-style>.")
                 .append(GEOMETRY_CLASS)
-                .append(" { stroke: #1f6fd6; stroke-width: 3px; fill: #ffffff; fill-opacity: 0.4; }")
+                .append(" { stroke: #1f6fd6; stroke-width: 3px; fill: #ffffff; fill-opacity: 0.1; }")
                 .append(".")
                 .append(GEOMETRY_CLASS)
                 .append(":hover, .")
                 .append(GEOMETRY_CLASS)
                 .append(":focus, .")
                 .append(GEOMETRY_CLASS)
-                .append(":active { stroke: #1f6fd6 !important; fill: #ffffff !important; fill-opacity: 0.1 !important; }</map-style>\n");
+                .append(":active { stroke: #1f6fd6 !important; stroke-width: 3px !important; fill: #ffffff !important; fill-opacity: 0.1 !important; }</map-style>\n");
         mapml.append("  </map-head>\n");
         mapml.append("  <map-body>\n");
-        appendFeatures(mapml, publication, format, featureCollection);
+        appendFeatures(mapml, publication, format, features);
         mapml.append("  </map-body>\n");
         mapml.append("</mapml->\n");
         return mapml.toString();
     }
 
-    private void appendFeatures(StringBuilder mapml, ThemePublication publication, String format, JsonNode featureCollection) {
-        JsonNode features = featureCollection.path("features");
-        if (!features.isArray()) {
+    private void appendFeatures(StringBuilder mapml, ThemePublication publication, String format, List<SubunitFeature> features) {
+        if (features == null || features.isEmpty()) {
             return;
         }
 
-        for (JsonNode feature : features) {
-            if (!"Feature".equals(feature.path("type").asText(""))) {
+        for (SubunitFeature feature : features) {
+            if (feature == null) {
                 continue;
             }
 
-            JsonNode geometry = feature.path("geometry");
             StringBuilder geometryMarkup = new StringBuilder();
-            if (!appendGeometry(geometry, geometryMarkup)) {
+            if (!appendGeometry(feature.geometry(), geometryMarkup)) {
                 continue;
             }
 
-            JsonNode properties = feature.path("properties");
-            String itemIdentifier = firstNonBlank(
-                    textValue(properties.path("identifier")),
-                    textValue(feature.path("id"))
-            );
-            String featureTitle = firstNonBlank(
-                    textValue(properties.path("title")),
-                    itemIdentifier,
-                    "Subunit"
-            );
-            String featureId = firstNonBlank(textValue(feature.path("id")), itemIdentifier);
+            String itemIdentifier = firstNonBlank(feature.itemIdentifier(), feature.featureId());
+            String featureTitle = firstNonBlank(feature.title(), itemIdentifier, "Subunit");
+            String featureId = firstNonBlank(feature.featureId(), itemIdentifier);
             String downloadUrl = buildDownloadUrl(publication, itemIdentifier, format);
 
             mapml.append("    <map-feature");
@@ -102,27 +101,38 @@ public class SubunitMapMlService {
         }
     }
 
-    private boolean appendGeometry(JsonNode geometry, StringBuilder out) {
-        if (geometry == null || !geometry.isObject()) {
+    private boolean appendGeometry(Geometry geometry, StringBuilder out) {
+        if (geometry == null || geometry.isEmpty()) {
             return false;
         }
 
-        String type = geometry.path("type").asText("");
-        JsonNode coordinates = geometry.path("coordinates");
-        return switch (type) {
-            case "Point" -> appendPoint(coordinates, out);
-            case "MultiPoint" -> appendMultiPoint(coordinates, out);
-            case "LineString" -> appendLineString(coordinates, out);
-            case "MultiLineString" -> appendMultiLineString(coordinates, out);
-            case "Polygon" -> appendPolygon(coordinates, out);
-            case "MultiPolygon" -> appendMultiPolygon(coordinates, out);
-            case "GeometryCollection" -> appendGeometryCollection(geometry.path("geometries"), out);
-            default -> false;
-        };
+        if (geometry instanceof Point point) {
+            return appendPoint(point, out);
+        }
+        if (geometry instanceof MultiPoint multiPoint) {
+            return appendMultiPoint(multiPoint, out);
+        }
+        if (geometry instanceof LineString lineString) {
+            return appendLineString(lineString, out);
+        }
+        if (geometry instanceof MultiLineString multiLineString) {
+            return appendMultiLineString(multiLineString, out);
+        }
+        if (geometry instanceof Polygon polygon) {
+            return appendPolygon(polygon, out);
+        }
+        if (geometry instanceof MultiPolygon multiPolygon) {
+            return appendMultiPolygon(multiPolygon, out);
+        }
+        if (geometry instanceof GeometryCollection geometryCollection) {
+            return appendGeometryCollection(geometryCollection, out);
+        }
+
+        return false;
     }
 
-    private boolean appendPoint(JsonNode coordinates, StringBuilder out) {
-        String pair = coordinatePair(coordinates);
+    private boolean appendPoint(Point point, StringBuilder out) {
+        String pair = coordinatePair(point.getCoordinate());
         if (pair == null) {
             return false;
         }
@@ -134,15 +144,12 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendMultiPoint(JsonNode coordinates, StringBuilder out) {
-        if (!coordinates.isArray()) {
-            return false;
-        }
-
+    private boolean appendMultiPoint(MultiPoint multiPoint, StringBuilder out) {
         StringBuilder coordinateText = new StringBuilder();
         int validCount = 0;
-        for (JsonNode coordinate : coordinates) {
-            String pair = coordinatePair(coordinate);
+        for (int i = 0; i < multiPoint.getNumGeometries(); i++) {
+            Point point = (Point) multiPoint.getGeometryN(i);
+            String pair = coordinatePair(point.getCoordinate());
             if (pair == null) {
                 continue;
             }
@@ -164,8 +171,8 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendLineString(JsonNode coordinates, StringBuilder out) {
-        String line = lineCoordinates(coordinates);
+    private boolean appendLineString(LineString lineString, StringBuilder out) {
+        String line = lineCoordinates(lineString.getCoordinates());
         if (line == null) {
             return false;
         }
@@ -177,15 +184,12 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendMultiLineString(JsonNode coordinates, StringBuilder out) {
-        if (!coordinates.isArray()) {
-            return false;
-        }
-
+    private boolean appendMultiLineString(MultiLineString multiLineString, StringBuilder out) {
         StringBuilder content = new StringBuilder();
         int validLines = 0;
-        for (JsonNode lineNode : coordinates) {
-            String line = lineCoordinates(lineNode);
+        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+            LineString lineString = (LineString) multiLineString.getGeometryN(i);
+            String line = lineCoordinates(lineString.getCoordinates());
             if (line == null) {
                 continue;
             }
@@ -206,23 +210,9 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendPolygon(JsonNode coordinates, StringBuilder out) {
-        if (!coordinates.isArray()) {
-            return false;
-        }
-
+    private boolean appendPolygon(Polygon polygon, StringBuilder out) {
         StringBuilder rings = new StringBuilder();
-        int validRings = 0;
-        for (JsonNode ring : coordinates) {
-            String line = lineCoordinates(ring);
-            if (line == null) {
-                continue;
-            }
-            rings.append("          <map-coordinates>")
-                    .append(line)
-                    .append("</map-coordinates>\n");
-            validRings++;
-        }
+        int validRings = appendPolygonRings(polygon, "          ", rings);
         if (validRings == 0) {
             return false;
         }
@@ -235,16 +225,13 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendMultiPolygon(JsonNode coordinates, StringBuilder out) {
-        if (!coordinates.isArray()) {
-            return false;
-        }
-
+    private boolean appendMultiPolygon(MultiPolygon multiPolygon, StringBuilder out) {
         StringBuilder polygons = new StringBuilder();
         int validPolygons = 0;
-        for (JsonNode polygon : coordinates) {
+        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+            Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
             StringBuilder polygonContent = new StringBuilder();
-            if (!appendPolygonContent(polygon, polygonContent)) {
+            if (appendPolygonRings(polygon, "            ", polygonContent) == 0) {
                 continue;
             }
             polygons.append("          <map-polygon class=\"")
@@ -266,16 +253,37 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendGeometryCollection(JsonNode geometries, StringBuilder out) {
-        if (!geometries.isArray()) {
-            return false;
+    private int appendPolygonRings(Polygon polygon, String indent, StringBuilder out) {
+        int validRings = 0;
+
+        String exterior = lineCoordinates(polygon.getExteriorRing().getCoordinates());
+        if (exterior != null) {
+            out.append(indent).append("<map-coordinates>")
+                    .append(exterior)
+                    .append("</map-coordinates>\n");
+            validRings++;
         }
 
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            String interior = lineCoordinates(polygon.getInteriorRingN(i).getCoordinates());
+            if (interior == null) {
+                continue;
+            }
+            out.append(indent).append("<map-coordinates>")
+                    .append(interior)
+                    .append("</map-coordinates>\n");
+            validRings++;
+        }
+
+        return validRings;
+    }
+
+    private boolean appendGeometryCollection(GeometryCollection geometryCollection, StringBuilder out) {
         StringBuilder children = new StringBuilder();
         int validChildren = 0;
-        for (JsonNode geometry : geometries) {
+        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
             StringBuilder child = new StringBuilder();
-            if (!appendGeometry(geometry, child)) {
+            if (!appendGeometry(geometryCollection.getGeometryN(i), child)) {
                 continue;
             }
             children.append(child);
@@ -291,32 +299,14 @@ public class SubunitMapMlService {
         return true;
     }
 
-    private boolean appendPolygonContent(JsonNode polygon, StringBuilder out) {
-        if (!polygon.isArray()) {
-            return false;
-        }
-
-        int validRings = 0;
-        for (JsonNode ring : polygon) {
-            String line = lineCoordinates(ring);
-            if (line == null) {
-                continue;
-            }
-            out.append("            <map-coordinates>")
-                    .append(line)
-                    .append("</map-coordinates>\n");
-            validRings++;
-        }
-        return validRings > 0;
-    }
-
-    private String lineCoordinates(JsonNode coordinates) {
-        if (!coordinates.isArray()) {
+    private String lineCoordinates(Coordinate[] coordinates) {
+        if (coordinates == null || coordinates.length == 0) {
             return null;
         }
+
         StringBuilder line = new StringBuilder();
         int validPoints = 0;
-        for (JsonNode coordinate : coordinates) {
+        for (Coordinate coordinate : coordinates) {
             String pair = coordinatePair(coordinate);
             if (pair == null) {
                 continue;
@@ -327,42 +317,15 @@ public class SubunitMapMlService {
             line.append(pair);
             validPoints++;
         }
+
         return validPoints >= 2 ? line.toString() : null;
     }
 
-    private String coordinatePair(JsonNode coordinate) {
-        if (!coordinate.isArray() || coordinate.size() < 2) {
+    private String coordinatePair(Coordinate coordinate) {
+        if (coordinate == null || !Double.isFinite(coordinate.x) || !Double.isFinite(coordinate.y)) {
             return null;
         }
-
-        String x = numericText(coordinate.get(0));
-        String y = numericText(coordinate.get(1));
-        if (x == null || y == null) {
-            return null;
-        }
-        return x + " " + y;
-    }
-
-    private String numericText(JsonNode value) {
-        if (value == null || value.isNull()) {
-            return null;
-        }
-        if (value.isNumber()) {
-            return value.asText();
-        }
-        if (value.isTextual()) {
-            String text = value.asText().trim();
-            if (text.isEmpty()) {
-                return null;
-            }
-            try {
-                Double.parseDouble(text);
-                return text;
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-        return null;
+        return coordinate.x + " " + coordinate.y;
     }
 
     private String buildDownloadUrl(ThemePublication publication, String itemIdentifier, String format) {
@@ -382,14 +345,6 @@ public class SubunitMapMlService {
 
     private String encodePathSegment(String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
-    }
-
-    private String textValue(JsonNode node) {
-        if (node == null || node.isNull() || !node.isValueNode()) {
-            return null;
-        }
-        String value = node.asText();
-        return value == null ? null : value.trim();
     }
 
     private String firstNonBlank(String... values) {
@@ -414,5 +369,13 @@ public class SubunitMapMlService {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&apos;");
+    }
+
+    public record SubunitFeature(
+            String featureId,
+            String itemIdentifier,
+            String title,
+            Geometry geometry
+    ) {
     }
 }

@@ -71,24 +71,35 @@ class ThemePublicationDataViewControllerTest {
     void returnsMapMlForExistingIdentifierAndFormat() throws Exception {
         Path itemsDir = tempDir.resolve("items");
         Files.createDirectories(itemsDir);
-        Files.writeString(itemsDir.resolve("ch.so.agi.subunit.geojson"), """
-                {
-                  "type": "FeatureCollection",
-                  "features": [
-                    {
-                      "type": "Feature",
-                      "id": "subunit-1",
-                      "properties": {
-                        "identifier": "subunit-1",
-                        "title": "Subunit Item 1"
-                      },
-                      "geometry": {
-                        "type": "Polygon",
-                        "coordinates": [[[2610000.0,1210000.0],[2610100.0,1210000.0],[2610100.0,1210100.0],[2610000.0,1210100.0],[2610000.0,1210000.0]]]
-                      }
-                    }
-                  ]
-                }
+        Files.writeString(itemsDir.resolve("ch.so.agi.subunit.xtf.zip.mapml"), """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <mapml- lang="de" xmlns="http://www.w3.org/1999/xhtml">
+                  <map-head>
+                    <map-title>Subunit Dataset (Subunits)</map-title>
+                    <map-meta http-equiv="Content-Type" content="text/mapml;charset=UTF-8" />
+                    <map-meta charset="utf-8" />
+                    <map-meta name="projection" content="OSMTILE" />
+                    <map-meta name="cs" content="pcrs" />
+                    <map-style>.subunit-geometry { stroke: #1f6fd6; stroke-width: 3px; fill: #ffffff; fill-opacity: 0.1; }</map-style>
+                  </map-head>
+                  <map-body>
+                    <map-feature id="subunit-1">
+                      <map-featurecaption>Subunit Item 1</map-featurecaption>
+                      <map-geometry cs="pcrs">
+                        <map-polygon class="subunit-geometry">
+                          <map-coordinates>2610000.0 1210000.0 2610100.0 1210000.0 2610100.0 1210100.0 2610000.0 1210100.0 2610000.0 1210000.0</map-coordinates>
+                        </map-polygon>
+                      </map-geometry>
+                      <map-properties>
+                        <div>
+                          <p><strong>Subunit:</strong> Subunit Item 1</p>
+                          <p><strong>Identifier:</strong> subunit-1</p>
+                          <p><a href="https://files.example/ch.so.agi.subunit/aktuell/subunit-1.xtf.zip" target="_blank" rel="noopener noreferrer">Download XTF.ZIP</a></p>
+                        </div>
+                      </map-properties>
+                    </map-feature>
+                  </map-body>
+                </mapml->
                 """);
 
         mockMvc.perform(get("/themepublication/data/ch.so.agi.subunit/xtf.zip/subunits.mapml"))
@@ -116,8 +127,8 @@ class ThemePublicationDataViewControllerTest {
     void returnsBadRequestForUnsupportedFormat() throws Exception {
         Path itemsDir = tempDir.resolve("items");
         Files.createDirectories(itemsDir);
-        Files.writeString(itemsDir.resolve("ch.so.agi.subunit.geojson"), """
-                {"type":"FeatureCollection","features":[]}
+        Files.writeString(itemsDir.resolve("ch.so.agi.subunit.xtf.zip.mapml"), """
+                <mapml- lang="de" xmlns="http://www.w3.org/1999/xhtml"></mapml->
                 """);
 
         mockMvc.perform(get("/themepublication/data/ch.so.agi.subunit/gpkg.zip/subunits.mapml"))
