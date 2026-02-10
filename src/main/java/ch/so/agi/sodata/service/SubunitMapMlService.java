@@ -35,7 +35,7 @@ public class SubunitMapMlService {
         mapml.append("    <map-meta name=\"cs\" content=\"pcrs\" />\n");
         mapml.append("    <map-style>.")
                 .append(GEOMETRY_CLASS)
-                .append(" { stroke: #1f6fd6; stroke-width: 3px; fill: #ffffff; fill-opacity: 0.1; }")
+                .append(" { stroke: #1f6fd6; stroke-width: 3px; fill: #ffffff; fill-opacity: 0.4; }")
                 .append(".")
                 .append(GEOMETRY_CLASS)
                 .append(":hover, .")
