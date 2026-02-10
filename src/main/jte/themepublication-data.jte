@@ -70,6 +70,10 @@
                     <map-link rel="tile" tref="https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg"></map-link>
                 </map-extent>
             </map-layer>
+            <map-layer label="${publication.title()} (Subunits)"
+                       src="/themepublication/data/${publication.identifier()}/${format}/subunits.mapml"
+                       checked>
+            </map-layer>
         </mapml-viewer>
     </section>
 </main>
